@@ -9,3 +9,16 @@ body {
   background: #f0ebe0;
   color: #111;
 }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-hero-line {
+  animation: fadeSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-hero-delay {
+  animation-delay: 120ms;
+}

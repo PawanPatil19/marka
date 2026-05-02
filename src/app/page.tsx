@@ -4,6 +4,7 @@ import { computeBadges } from '@/lib/badges'
 import { getRaces } from '@/lib/races'
 import { getProfile } from '@/lib/profile'
 import Link from 'next/link'
+import { HeroGreeting } from '@/components/HeroGreeting'
 import type { Race } from '@/lib/types'
 
 const SPORT_COLORS: Record<string, string> = {
@@ -29,6 +30,10 @@ export default async function HomePage() {
   const name = (profile?.display_name ?? user.email?.split('@')[0] ?? 'Athlete').toUpperCase()
   const today = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
 
+  const COUNT_THRESHOLDS = [5, 10, 25, 50]
+  const nextCountTarget = COUNT_THRESHOLDS.find(t => races.length < t) ?? null
+  const racesToNext = nextCountTarget ? nextCountTarget - races.length : null
+
   return (
     <main className="min-h-screen bg-[#f0ebe0]">
 
@@ -38,9 +43,7 @@ export default async function HomePage() {
           <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-2">
             {today}
           </p>
-          <h1 className="font-[family-name:var(--font-barlow-condensed)] font-black text-[80px] uppercase leading-[0.88] text-[#111]">
-            HELLO,<br />{name}.
-          </h1>
+          <HeroGreeting name={name} />
         </div>
 
         {/* Stats */}
@@ -62,6 +65,22 @@ export default async function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Next badge callout */}
+      {racesToNext !== null && (
+        <Link href="/passport" className="group flex items-center justify-between px-14 py-3.5 border-b border-[#c8c0b0] bg-[#ebe5d5] hover:bg-[#e4ddd0] transition-colors">
+          <div className="flex items-center gap-4">
+            <p className="font-[family-name:var(--font-space-mono)] text-[8px] uppercase tracking-widest text-[#888]">Next Badge</p>
+            <div className="w-px h-3 bg-[#c8c0b0]" />
+            <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[18px] uppercase text-[#111]">
+              <span className="text-[#e8001d]">{racesToNext}</span> more race{racesToNext !== 1 ? 's' : ''} → {nextCountTarget} Races
+            </p>
+          </div>
+          <p className="font-[family-name:var(--font-space-mono)] text-[8px] uppercase tracking-widest text-[#888] group-hover:text-[#111] transition-colors">
+            View Passport →
+          </p>
+        </Link>
+      )}
 
       {/* Race list */}
       <div className="max-w-[860px] mx-auto w-full px-14 flex-1">

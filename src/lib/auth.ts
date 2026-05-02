@@ -10,3 +10,16 @@ export async function requireUser(): Promise<User> {
   if (!user) redirect('/login')
   return user
 }
+
+export async function requireAdmin(): Promise<User> {
+  const user = await requireUser()
+  const adminId = process.env.ADMIN_USER_ID
+  if (!adminId || user.id !== adminId) redirect('/')
+  return user
+}
+
+export async function getOptionalUser(): Promise<User | null> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  return user ?? null
+}

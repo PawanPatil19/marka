@@ -1,7 +1,33 @@
 import { requireUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import Link from 'next/link'
-import type { Badge } from '@/lib/types'
+import type { Badge, Race } from '@/lib/types'
+
+const PB_LABELS: Record<string, string> = {
+  '5k': '5K', '10k': '10K', 'half': 'Half Marathon', 'full': 'Full Marathon', 'ultra': 'Ultra',
+  'sprint': 'Sprint Tri', 'olympic': 'Olympic Tri', '70.3': '70.3 Triathlon', 'ironman': 'Ironman',
+}
+
+function timeToSeconds(t: string): number {
+  const [h, m, s] = t.split(':').map(Number)
+  return h * 3600 + m * 60 + (s || 0)
+}
+
+function computePBs(races: Race[]): { label: string; race: Race }[] {
+  const best = new Map<string, Race>()
+  for (const race of races) {
+    const key = `${race.sport_type}__${race.distance_category}`
+    const existing = best.get(key)
+    if (!existing || timeToSeconds(race.finish_time) < timeToSeconds(existing.finish_time)) {
+      best.set(key, race)
+    }
+  }
+  return Array.from(best.entries()).map(([key, race]) => {
+    const dist = key.split('__')[1]
+    const label = PB_LABELS[dist] ?? dist.toUpperCase()
+    return { label, race }
+  })
+}
 
 function countryFlag(code: string) {
   return code.toUpperCase().split('').map(c =>
@@ -32,6 +58,7 @@ export default async function PassportPage() {
   ])
 
   const earnedKeys = new Set(badges.map(b => b.key))
+  const pbs = computePBs(races)
   const geography = badges.filter(b => b.category === 'geography')
   const nonGeo = badges.filter(b => b.category !== 'geography')
   const lockedMilestones = ALL_MILESTONES.filter(k => !earnedKeys.has(k))
@@ -69,80 +96,111 @@ export default async function PassportPage() {
           </Link>
         </div>
       ) : (
-        <div className="px-10 py-7 grid grid-cols-2 gap-8">
+        <div className="px-10 py-7 space-y-8">
 
           {/* Geography */}
-          <div>
-            <div className="border-b-2 border-[#111] pb-2 mb-0">
-              <p className="font-[family-name:var(--font-space-mono)] text-[10px] font-bold uppercase tracking-widest text-[#111]">
-                § Geography · {geography.length} {geography.length === 1 ? 'Country' : 'Countries'}
-              </p>
-            </div>
-
-            {geography.length > 0 && (
-              <div className="grid grid-cols-5 border-[1.5px] border-[#111] border-t-0">
-                {geography.map((badge, i) => {
-                  const code = badge.key.replace('country_', '')
-                  return (
-                    <div
-                      key={badge.key}
-                      className={`p-4 text-center ${i % 5 !== 4 ? 'border-r border-[#c8c0b0]' : ''} border-b border-[#c8c0b0]`}
-                    >
-                      <div className="text-3xl mb-1.5">{countryFlag(code)}</div>
-                      <p className="font-[family-name:var(--font-space-mono)] text-[9px] font-bold uppercase">{code}</p>
-                      <p className="font-[family-name:var(--font-space-mono)] text-[7px] text-[#e8001d] font-bold mt-1">EARNED</p>
-                    </div>
-                  )
-                })}
+          {geography.filter(b => b.key.replace('country_', '')).length > 0 && (
+            <div>
+              <div className="border-b-2 border-[#111] pb-2 mb-0">
+                <p className="font-[family-name:var(--font-space-mono)] text-[10px] font-bold uppercase tracking-widest text-[#111]">
+                  § Geography · {geography.filter(b => b.key.replace('country_', '').length === 2).length} {geography.length === 1 ? 'Country' : 'Countries'}
+                </p>
               </div>
-            )}
-          </div>
+              <div className="flex flex-wrap border-[1.5px] border-[#111] border-t-0">
+                {geography
+                  .filter(b => b.key.replace('country_', '').length === 2)
+                  .map((badge, i, arr) => {
+                    const code = badge.key.replace('country_', '')
+                    return (
+                      <div
+                        key={badge.key}
+                        className={`p-5 text-center w-28 flex-shrink-0 border-r border-b border-[#c8c0b0] ${i === arr.length - 1 ? 'border-r-0' : ''}`}
+                      >
+                        <div className="text-3xl mb-2">{countryFlag(code)}</div>
+                        <p className="font-[family-name:var(--font-space-mono)] text-[9px] font-bold uppercase text-[#111]">{code}</p>
+                        <p className="font-[family-name:var(--font-space-mono)] text-[7px] text-[#e8001d] font-bold mt-1">EARNED</p>
+                      </div>
+                    )
+                  })}
+              </div>
+            </div>
+          )}
 
-          {/* Milestones & Count */}
+          {/* Personal Bests */}
+          {pbs.length > 0 && (
+            <div>
+              <div className="border-b-2 border-[#111] pb-2 mb-0">
+                <p className="font-[family-name:var(--font-space-mono)] text-[10px] font-bold uppercase tracking-widest text-[#111]">
+                  § Personal Bests
+                </p>
+              </div>
+              <div className="border-[1.5px] border-[#111] border-t-0 grid grid-cols-3">
+                {pbs.map(({ label, race }, i) => (
+                  <Link
+                    key={`${race.sport_type}__${race.distance_category}`}
+                    href={`/races/${race.id}`}
+                    className={`flex items-center justify-between px-5 py-4 hover:bg-[#e4ddd0] transition-colors group
+                      ${i % 3 !== 2 ? 'border-r border-[#c8c0b0]' : ''}
+                      ${i < pbs.length - 3 ? 'border-b border-[#c8c0b0]' : ''}
+                    `}
+                  >
+                    <div>
+                      <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1">{label}</p>
+                      <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[32px] leading-none text-[#111] group-hover:text-[#e8001d] transition-colors">
+                        {race.finish_time}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-black text-[11px] uppercase text-[#111] truncate max-w-[140px]">{race.name}</p>
+                      <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#888] mt-0.5">
+                        {race.location_city} · {new Date(race.date).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase()}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Milestones */}
           <div>
             <div className="border-b-2 border-[#111] pb-2 mb-0">
               <p className="font-[family-name:var(--font-space-mono)] text-[10px] font-bold uppercase tracking-widest text-[#111]">
                 § Milestones
               </p>
             </div>
-            <div className="border-[1.5px] border-[#111] border-t-0">
-
+            <div className="border-[1.5px] border-[#111] border-t-0 grid grid-cols-3">
               {/* Earned */}
-              {nonGeo.map(badge => {
+              {nonGeo.map((badge, i) => {
                 const meta = MILESTONE_META[badge.key]
                 return (
-                  <div key={badge.key} className="flex items-center justify-between px-5 py-3.5 border-b border-[#c8c0b0]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#111] flex items-center justify-center text-lg flex-shrink-0">
-                        {meta?.icon ?? '🏅'}
-                      </div>
-                      <div>
-                        <p className="font-black text-[14px] uppercase text-[#111]">{badge.name}</p>
-                        <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#888]">
-                          {new Date(badge.earned_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase()}
-                        </p>
-                      </div>
+                  <div key={badge.key} className={`flex items-center gap-3 px-5 py-4 border-b border-[#c8c0b0] ${i % 3 !== 2 ? 'border-r border-[#c8c0b0]' : ''}`}>
+                    <div className="w-10 h-10 bg-[#111] flex items-center justify-center text-lg flex-shrink-0">
+                      {meta?.icon ?? '🏅'}
                     </div>
-                    <span className="font-[family-name:var(--font-space-mono)] text-[9px] font-bold text-[#e8001d]">✓ EARNED</span>
+                    <div className="min-w-0">
+                      <p className="font-black text-[13px] uppercase text-[#111] leading-tight">{badge.name}</p>
+                      <p className="font-[family-name:var(--font-space-mono)] text-[8px] text-[#e8001d] font-bold mt-0.5">
+                        ✓ {new Date(badge.earned_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase()}
+                      </p>
+                    </div>
                   </div>
                 )
               })}
-
               {/* Locked */}
-              {lockedMilestones.map(key => {
+              {lockedMilestones.map((key, i) => {
                 const meta = MILESTONE_META[key]
+                const totalEarned = nonGeo.length
+                const idx = totalEarned + i
                 return (
-                  <div key={key} className="flex items-center justify-between px-5 py-3.5 border-b border-[#c8c0b0] opacity-35 last:border-0">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 border-[1.5px] border-[#999] flex items-center justify-center text-lg flex-shrink-0">
-                        {meta?.icon ?? '🏅'}
-                      </div>
-                      <div>
-                        <p className="font-black text-[14px] uppercase text-[#888]">{key.replace(/_/g, ' ')}</p>
-                        <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#bbb]">{meta?.desc ?? ''}</p>
-                      </div>
+                  <div key={key} className={`flex items-center gap-3 px-5 py-4 border-b border-[#c8c0b0] opacity-30 ${idx % 3 !== 2 ? 'border-r border-[#c8c0b0]' : ''}`}>
+                    <div className="w-10 h-10 border-[1.5px] border-[#999] flex items-center justify-center text-lg flex-shrink-0">
+                      {meta?.icon ?? '🏅'}
                     </div>
-                    <span className="font-[family-name:var(--font-space-mono)] text-[9px] font-bold text-[#bbb]">LOCKED</span>
+                    <div className="min-w-0">
+                      <p className="font-black text-[13px] uppercase text-[#888] leading-tight">{key.replace(/_/g, ' ')}</p>
+                      <p className="font-[family-name:var(--font-space-mono)] text-[8px] text-[#bbb] mt-0.5">{meta?.desc ?? ''}</p>
+                    </div>
                   </div>
                 )
               })}

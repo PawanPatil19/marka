@@ -39,6 +39,27 @@ export type RaceInsert = {
   notes?: string | null
 }
 
+export interface StravaConnection {
+  access_token: string
+  refresh_token: string
+  expires_at: number  // unix timestamp (seconds)
+}
+
+export interface DiscoverRace {
+  id: string
+  name: string
+  date: string // YYYY-MM-DD
+  location_city: string
+  location_country: string // ISO 3166-1 alpha-2
+  sport_type: SportType
+  distance_category: DistanceCategory
+  registration_url: string
+  description?: string
+  created_at: string
+}
+
+export type DiscoverRaceInsert = Omit<DiscoverRace, 'id' | 'created_at'>
+
 export type BadgeCategory = 'geography' | 'milestone' | 'count'
 
 export interface Badge {

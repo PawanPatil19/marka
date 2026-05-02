@@ -1,6 +1,7 @@
 import { requireUser } from '@/lib/auth'
 import { getProfile, updateProfile } from '@/lib/profile'
 import { signOut } from '@/app/login/actions'
+import { db } from '@/lib/db'
 import Link from 'next/link'
 
 export default async function ProfilePage({
@@ -9,6 +10,8 @@ export default async function ProfilePage({
   searchParams: Promise<{ error?: string; saved?: string }>
 }) {
   const [user, profile] = await Promise.all([requireUser(), getProfile()])
+  const stravaConn = await db.profiles.findStravaConnection(user.id)
+  const stravaConnected = !!stravaConn
   const { error, saved } = await searchParams
 
   const displayName = profile?.display_name ?? ''
@@ -102,6 +105,36 @@ export default async function ProfilePage({
             </Link>
           </div>
         )}
+
+        {/* Strava */}
+        <div className="border-[1.5px] border-[#c8c0b0] p-5 mb-8">
+          <div className="flex items-center justify-between mb-1">
+            <p className="font-black text-[14px] uppercase text-[#111]">Strava</p>
+            {stravaConnected && (
+              <span className="font-[family-name:var(--font-space-mono)] text-[8px] uppercase tracking-widest text-green-700">
+                Connected ✓
+              </span>
+            )}
+          </div>
+          <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#888] mb-4 uppercase tracking-wide">
+            {stravaConnected ? 'Import your race activities from Strava.' : 'Connect once to import race activities.'}
+          </p>
+          {stravaConnected ? (
+            <Link
+              href="/strava/import"
+              className="inline-flex items-center gap-2 bg-[#111] text-[#f0ebe0] px-5 py-2.5 font-[family-name:var(--font-space-mono)] text-[10px] uppercase tracking-widest font-bold hover:bg-[#333] transition-colors"
+            >
+              Import Races →
+            </Link>
+          ) : (
+            <a
+              href="/api/strava/connect"
+              className="inline-flex items-center gap-2 bg-[#fc4c02] text-white px-5 py-2.5 font-[family-name:var(--font-space-mono)] text-[10px] uppercase tracking-widest font-bold hover:bg-[#e04402] transition-colors"
+            >
+              Connect Strava →
+            </a>
+          )}
+        </div>
 
         {/* Sign out */}
         <form action={signOut}>

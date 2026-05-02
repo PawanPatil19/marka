@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import type { Race, Badge, Profile, RaceInsert } from '@/lib/types'
+import type { Race, Badge, Profile, RaceInsert, StravaConnection, DiscoverRace, DiscoverRaceInsert } from '@/lib/types'
 
 export const db = {
   races: {
@@ -29,6 +29,16 @@ export const db = {
     async insert(race: RaceInsert): Promise<void> {
       const supabase = await createClient()
       const { error } = await supabase.from('races').insert(race)
+      if (error) throw error
+    },
+
+    async update(id: string, userId: string, fields: Partial<RaceInsert>): Promise<void> {
+      const supabase = await createClient()
+      const { error } = await supabase
+        .from('races')
+        .update(fields)
+        .eq('id', id)
+        .eq('user_id', userId)
       if (error) throw error
     },
 
@@ -98,6 +108,107 @@ export const db = {
       const { error } = await supabase
         .from('profiles')
         .upsert({ id: userId, ...fields }, { onConflict: 'id' })
+      if (error) throw error
+    },
+
+    async findStravaConnection(userId: string): Promise<StravaConnection | null> {
+      const supabase = await createClient()
+      const { data } = await supabase
+        .from('profiles')
+        .select('strava_access_token, strava_refresh_token, strava_token_expires_at')
+        .eq('id', userId)
+        .single()
+      if (!data?.strava_access_token) return null
+      return {
+        access_token: data.strava_access_token,
+        refresh_token: data.strava_refresh_token,
+        expires_at: data.strava_token_expires_at,
+      }
+    },
+
+    async upsertStravaConnection(userId: string, conn: StravaConnection): Promise<void> {
+      const supabase = await createClient()
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          strava_access_token: conn.access_token,
+          strava_refresh_token: conn.refresh_token,
+          strava_token_expires_at: conn.expires_at,
+        })
+        .eq('id', userId)
+      if (error) throw error
+    },
+  },
+
+  discover: {
+    async findAll(): Promise<DiscoverRace[]> {
+      const supabase = await createClient()
+      const { data, error } = await supabase
+        .from('discover_races')
+        .select('*')
+        .order('date', { ascending: true })
+      if (error) throw error
+      return (data ?? []) as DiscoverRace[]
+    },
+
+    async findById(id: string): Promise<DiscoverRace | null> {
+      const supabase = await createClient()
+      const { data } = await supabase
+        .from('discover_races')
+        .select('*')
+        .eq('id', id)
+        .single()
+      return data ?? null
+    },
+
+    async insert(race: DiscoverRaceInsert): Promise<void> {
+      const supabase = await createClient()
+      const { error } = await supabase.from('discover_races').insert(race)
+      if (error) throw error
+    },
+
+    async update(id: string, fields: Partial<DiscoverRaceInsert>): Promise<void> {
+      const supabase = await createClient()
+      const { error } = await supabase
+        .from('discover_races')
+        .update(fields)
+        .eq('id', id)
+      if (error) throw error
+    },
+
+    async delete(id: string): Promise<void> {
+      const supabase = await createClient()
+      const { error } = await supabase
+        .from('discover_races')
+        .delete()
+        .eq('id', id)
+      if (error) throw error
+    },
+
+    async getAttendingIds(userId: string): Promise<Set<string>> {
+      const supabase = await createClient()
+      const { data } = await supabase
+        .from('discover_attendees')
+        .select('discover_race_id')
+        .eq('user_id', userId)
+      return new Set((data ?? []).map(r => r.discover_race_id))
+    },
+
+    async attend(userId: string, raceId: string): Promise<void> {
+      const supabase = await createClient()
+      const { error } = await supabase
+        .from('discover_attendees')
+        .insert({ user_id: userId, discover_race_id: raceId })
+      if (error && error.code !== '23505') throw error // ignore duplicate
+    },
+
+    async unattend(userId: string, raceId: string): Promise<void> {
+      const supabase = await createClient()
+      const { error } = await supabase
+        .from('discover_attendees')
+        .delete()
+        .eq('user_id', userId)
+        .eq('discover_race_id', raceId)
       if (error) throw error
     },
   },

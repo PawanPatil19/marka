@@ -29,7 +29,7 @@ export async function updateSession(request: NextRequest) {
 
   // Redirect unauthenticated users to login (except auth routes)
   const { pathname } = request.nextUrl
-  const isPublic = pathname.startsWith('/login') || pathname.startsWith('/auth') || pathname.startsWith('/share/')
+  const isPublic = pathname.startsWith('/login') || pathname.startsWith('/auth') || pathname.startsWith('/share/') || pathname.startsWith('/discover')
   if (!user && !isPublic) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'

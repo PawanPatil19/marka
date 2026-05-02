@@ -69,14 +69,20 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ id:
           </div>
         )}
 
-        {/* Delete */}
-        <div className="px-5 py-4 mt-auto">
+        {/* Edit + Delete */}
+        <div className="px-5 py-4 mt-auto flex items-center justify-between">
+          <Link
+            href={`/races/${id}/edit`}
+            className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] hover:text-[#111] transition-colors"
+          >
+            Edit Race
+          </Link>
           <form action={async () => {
             'use server'
             await deleteRace(id)
           }}>
             <button type="submit" className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] hover:text-[#e8001d] transition-colors cursor-pointer">
-              Delete Race
+              Delete
             </button>
           </form>
         </div>
