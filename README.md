@@ -4,6 +4,9 @@
 
 A race log for endurance athletes who take their sport seriously.
 
+<img width="1421" height="752" alt="image" src="https://github.com/user-attachments/assets/1ceca8c3-c9a3-48c1-846f-93a2ce9f302d" />
+
+
 ---
 
 ## What it is
