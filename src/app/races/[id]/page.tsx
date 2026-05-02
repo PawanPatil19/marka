@@ -15,10 +15,10 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ id:
   }).toUpperCase()
 
   return (
-    <div className="flex flex-1" style={{ minHeight: 'calc(100vh - 56px)' }}>
+    <div className="flex flex-col md:flex-row flex-1" style={{ minHeight: 'calc(100vh - 56px)' }}>
 
       {/* Left panel */}
-      <aside className="w-[280px] flex-shrink-0 border-r-2 border-[#111] sticky top-14 h-[calc(100vh-56px)] overflow-y-auto flex flex-col">
+      <aside className="md:w-[280px] flex-shrink-0 border-b-2 md:border-b-0 md:border-r-2 border-[#111] md:sticky md:top-14 md:h-[calc(100vh-56px)] overflow-y-auto flex flex-col">
 
         {/* Back + title */}
         <div className="px-5 py-4 border-b-[1.5px] border-[#c8c0b0]">
@@ -97,16 +97,16 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ id:
         </div>
 
         {/* Stats summary */}
-        <div className="grid grid-cols-3 border-b border-[#c8c0b0]">
-          <div className="px-8 py-6 border-r border-[#c8c0b0]">
+        <div className="grid grid-cols-1 sm:grid-cols-3 border-b border-[#c8c0b0]">
+          <div className="px-5 sm:px-8 py-5 sm:py-6 border-b sm:border-b-0 sm:border-r border-[#c8c0b0]">
             <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1">Finish Time</p>
             <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-4xl text-[#111]">{r.finish_time}</p>
           </div>
-          <div className="px-8 py-6 border-r border-[#c8c0b0]">
+          <div className="px-5 sm:px-8 py-5 sm:py-6 border-b sm:border-b-0 sm:border-r border-[#c8c0b0]">
             <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1">Location</p>
             <p className="font-black text-lg uppercase text-[#111]">{r.location_city}, {r.location_country}</p>
           </div>
-          <div className="px-8 py-6">
+          <div className="px-5 sm:px-8 py-5 sm:py-6">
             <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1">Category</p>
             <p className="font-black text-lg uppercase text-[#111]">{r.distance_category}</p>
           </div>

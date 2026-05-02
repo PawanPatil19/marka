@@ -42,12 +42,12 @@ export default async function DiscoverPage() {
     <main className="min-h-screen bg-[#f0ebe0]">
 
       {/* Header */}
-      <div className="border-b-2 border-[#111] px-14 pt-10 pb-8 flex items-end justify-between">
+      <div className="border-b-2 border-[#111] px-5 sm:px-14 pt-8 sm:pt-10 pb-6 sm:pb-8 flex items-end justify-between">
         <div>
           <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-2">
             Race Calendar
           </p>
-          <h1 className="font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] uppercase leading-[0.88] text-[#111]">
+          <h1 className="font-[family-name:var(--font-barlow-condensed)] font-black text-[48px] sm:text-[72px] uppercase leading-[0.88] text-[#111]">
             Discover
           </h1>
           <p className="font-[family-name:var(--font-space-mono)] text-[10px] text-[#888] mt-3">
@@ -56,7 +56,7 @@ export default async function DiscoverPage() {
         </div>
         {attending.length > 0 && (
           <div className="pb-2 text-right">
-            <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] leading-none text-[#111]">{attending.length}</p>
+            <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[40px] sm:text-[52px] leading-none text-[#111]">{attending.length}</p>
             <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888]">I'm In</p>
           </div>
         )}
@@ -64,7 +64,7 @@ export default async function DiscoverPage() {
 
       {/* Badge legend */}
       {user && (
-        <div className="flex items-center gap-3 px-14 py-3 border-b border-[#c8c0b0] bg-[#ebe5d5]">
+        <div className="flex items-center gap-3 px-5 sm:px-14 py-3 border-b border-[#c8c0b0] bg-[#ebe5d5]">
           <div className="w-2 h-2 bg-[#e8001d] flex-shrink-0" />
           <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888]">
             Red dot = new country — race here to earn a geography badge
@@ -72,7 +72,7 @@ export default async function DiscoverPage() {
         </div>
       )}
 
-      <div className="max-w-[860px] mx-auto w-full px-14 pt-6 pb-16">
+      <div className="max-w-[860px] mx-auto w-full px-4 sm:px-14 pt-6 pb-16">
 
         {/* Attending */}
         {attending.length > 0 && (
@@ -160,7 +160,7 @@ function RaceRow({ race, isNewCountry, isAttending, isLoggedIn, past = false }: 
   const timeLabel = daysAway > 60 ? `${Math.round(daysAway / 30)}mo` : `${daysAway}d`
 
   return (
-    <div className={`flex items-center gap-3 py-4 border-b border-[#c8c0b0] px-2 -mx-2 ${past ? 'opacity-40' : ''} ${isAttending ? 'bg-[#f5f0e8]' : ''}`}>
+    <div className={`flex items-center gap-2 sm:gap-3 py-4 border-b border-[#c8c0b0] px-2 -mx-2 ${past ? 'opacity-40' : ''} ${isAttending ? 'bg-[#f5f0e8]' : ''}`}>
 
       {/* Flag + new-country dot */}
       <div className="w-10 flex-shrink-0 text-center relative">

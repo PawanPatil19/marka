@@ -18,7 +18,7 @@ export default async function ProfilePage({
 
   return (
     <main className="min-h-screen bg-[#f0ebe0]">
-      <div className="max-w-[640px] mx-auto px-8 pt-12 pb-16">
+      <div className="max-w-[640px] mx-auto px-5 sm:px-8 pt-8 sm:pt-12 pb-16">
 
         {/* Header */}
         <div className="border-b-2 border-[#111] pb-6 mb-8">

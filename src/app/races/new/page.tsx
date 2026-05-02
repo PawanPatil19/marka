@@ -78,7 +78,7 @@ export default function LogRacePage() {
 
   return (
     <main className="min-h-screen bg-[#f0ebe0]">
-      <div className="max-w-[800px] mx-auto px-8 py-10">
+      <div className="max-w-[800px] mx-auto px-5 sm:px-8 py-8 sm:py-10">
 
         {/* Header */}
         <div className="border-b-2 border-[#111] pb-5 mb-8 flex items-end justify-between">
@@ -108,7 +108,7 @@ export default function LogRacePage() {
           {/* Sport picker */}
           <div>
             <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-3">Sport Type</p>
-            <div className="grid grid-cols-6 border-[1.5px] border-[#111]">
+            <div className="grid grid-cols-3 sm:grid-cols-6 border-[1.5px] border-[#111]">
               {SPORTS.map((s, i) => (
                 <button
                   key={s.type}

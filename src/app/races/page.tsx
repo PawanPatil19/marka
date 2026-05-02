@@ -33,28 +33,28 @@ export default async function RacesPage() {
   const groups = groupByYear(races)
 
   return (
-    <div className="flex flex-1" style={{ minHeight: 'calc(100vh - 56px)' }}>
+    <div className="flex flex-col md:flex-row flex-1" style={{ minHeight: 'calc(100vh - 56px)' }}>
 
       {/* Left panel */}
-      <aside className="w-[280px] flex-shrink-0 border-r-2 border-[#111] sticky top-14 h-[calc(100vh-56px)] overflow-y-auto flex flex-col">
+      <aside className="md:w-[280px] flex-shrink-0 border-b-2 md:border-b-0 md:border-r-2 border-[#111] md:sticky md:top-14 md:h-[calc(100vh-56px)] overflow-y-auto flex flex-col">
 
         {/* Total */}
-        <div className="px-5 pt-5 pb-4 border-b-[1.5px] border-[#c8c0b0]">
+        <div className="px-5 pt-5 pb-4 border-b-[1.5px] border-[#c8c0b0] flex md:block items-center justify-between">
           <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-0.5">Total Races</p>
-          <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[64px] leading-none text-[#111]">{races.length}</p>
+          <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[48px] md:text-[64px] leading-none text-[#111]">{races.length}</p>
         </div>
 
         {/* Sport breakdown */}
         {Object.keys(sportCounts).length > 0 && (
           <div className="px-5 py-4 border-b-[1.5px] border-[#c8c0b0]">
             <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-3">By Sport</p>
-            <div className="flex flex-col gap-0">
+            <div className="flex md:flex-col flex-wrap gap-x-4 gap-y-0">
               {Object.entries(sportCounts).map(([sport, count]) => (
-                <div key={sport} className="flex items-center justify-between py-2 border-b border-[#e8e0d0] last:border-0">
+                <div key={sport} className="flex items-center justify-between py-2 border-b border-[#e8e0d0] last:border-0 w-full md:w-auto">
                   <span className="font-[family-name:var(--font-space-mono)] text-[10px] uppercase tracking-wide text-[#444]">
                     {sport.replace('_', ' ')}
                   </span>
-                  <span className="font-[family-name:var(--font-space-mono)] text-[10px] font-bold" style={{ color: SPORT_COLORS[sport] ?? '#888' }}>
+                  <span className="font-[family-name:var(--font-space-mono)] text-[10px] font-bold ml-3" style={{ color: SPORT_COLORS[sport] ?? '#888' }}>
                     {count}
                   </span>
                 </div>

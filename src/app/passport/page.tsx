@@ -68,17 +68,17 @@ export default async function PassportPage() {
     <main className="min-h-screen bg-[#f0ebe0]">
 
       {/* Page header */}
-      <div className="flex items-end justify-between border-b-2 border-[#111] px-10 pt-7 pb-0">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between border-b-2 border-[#111] px-5 sm:px-10 pt-7 pb-0 gap-3 sm:gap-0">
         <div>
           <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1">Achievements</p>
-          <h1 className="font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] uppercase leading-none text-[#111] pb-3">Passport</h1>
+          <h1 className="font-[family-name:var(--font-barlow-condensed)] font-black text-[40px] sm:text-[52px] uppercase leading-none text-[#111] pb-3">Passport</h1>
         </div>
-        <div className="flex items-center gap-8 pb-4">
-          <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#888] uppercase tracking-widest">
+        <div className="flex items-center gap-5 sm:gap-8 pb-4">
+          <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#888] uppercase tracking-widest hidden sm:block">
             {raceCount} races · {geography.length} countries · {badges.length} badges
           </p>
           <div className="flex items-center gap-2">
-            <div className="w-40 h-1 bg-[#ddd]">
+            <div className="w-32 sm:w-40 h-1 bg-[#ddd]">
               <div className="h-1 bg-[#111]" style={{ width: `${Math.min(100, (badges.length / 18) * 100)}%` }} />
             </div>
             <span className="font-[family-name:var(--font-space-mono)] text-[9px] font-bold text-[#111]">
@@ -96,7 +96,7 @@ export default async function PassportPage() {
           </Link>
         </div>
       ) : (
-        <div className="px-10 py-7 space-y-8">
+        <div className="px-5 sm:px-10 py-7 space-y-8">
 
           {/* Geography */}
           {geography.filter(b => b.key.replace('country_', '')).length > 0 && (
@@ -134,15 +134,12 @@ export default async function PassportPage() {
                   § Personal Bests
                 </p>
               </div>
-              <div className="border-[1.5px] border-[#111] border-t-0 grid grid-cols-3">
+              <div className="border-[1.5px] border-[#111] border-t-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                 {pbs.map(({ label, race }, i) => (
                   <Link
                     key={`${race.sport_type}__${race.distance_category}`}
                     href={`/races/${race.id}`}
-                    className={`flex items-center justify-between px-5 py-4 hover:bg-[#e4ddd0] transition-colors group
-                      ${i % 3 !== 2 ? 'border-r border-[#c8c0b0]' : ''}
-                      ${i < pbs.length - 3 ? 'border-b border-[#c8c0b0]' : ''}
-                    `}
+                    className="flex items-center justify-between px-5 py-4 hover:bg-[#e4ddd0] transition-colors group border-b border-[#c8c0b0]"
                   >
                     <div>
                       <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1">{label}</p>
@@ -169,12 +166,12 @@ export default async function PassportPage() {
                 § Milestones
               </p>
             </div>
-            <div className="border-[1.5px] border-[#111] border-t-0 grid grid-cols-3">
+            <div className="border-[1.5px] border-[#111] border-t-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
               {/* Earned */}
               {nonGeo.map((badge, i) => {
                 const meta = MILESTONE_META[badge.key]
                 return (
-                  <div key={badge.key} className={`flex items-center gap-3 px-5 py-4 border-b border-[#c8c0b0] ${i % 3 !== 2 ? 'border-r border-[#c8c0b0]' : ''}`}>
+                  <div key={badge.key} className="flex items-center gap-3 px-5 py-4 border-b border-[#c8c0b0]">
                     <div className="w-10 h-10 bg-[#111] flex items-center justify-center text-lg flex-shrink-0">
                       {meta?.icon ?? '🏅'}
                     </div>
@@ -188,12 +185,10 @@ export default async function PassportPage() {
                 )
               })}
               {/* Locked */}
-              {lockedMilestones.map((key, i) => {
+              {lockedMilestones.map((key) => {
                 const meta = MILESTONE_META[key]
-                const totalEarned = nonGeo.length
-                const idx = totalEarned + i
                 return (
-                  <div key={key} className={`flex items-center gap-3 px-5 py-4 border-b border-[#c8c0b0] opacity-30 ${idx % 3 !== 2 ? 'border-r border-[#c8c0b0]' : ''}`}>
+                  <div key={key} className="flex items-center gap-3 px-5 py-4 border-b border-[#c8c0b0] opacity-30">
                     <div className="w-10 h-10 border-[1.5px] border-[#999] flex items-center justify-center text-lg flex-shrink-0">
                       {meta?.icon ?? '🏅'}
                     </div>
