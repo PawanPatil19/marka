@@ -1,3 +1,4 @@
+import { db } from './db'
 import type { Race, Badge } from './types'
 
 const COUNTRY_NAMES: Record<string, string> = {
@@ -77,4 +78,10 @@ export function computeBadges(races: Race[]): Badge[] {
   }
 
   return badges
+}
+
+export async function syncBadges(userId: string): Promise<void> {
+  const races = await db.races.findByUser(userId)
+  const badges = computeBadges(races)
+  await db.badges.upsertMany(userId, badges)
 }

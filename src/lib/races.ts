@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireUser } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { computeBadges } from '@/lib/badges'
+import { syncBadges } from '@/lib/badges'
 import type { Race } from '@/lib/types'
 
 export async function getRaces(): Promise<Race[]> {
@@ -45,8 +45,3 @@ export async function deleteRace(id: string) {
   redirect('/races')
 }
 
-async function syncBadges(userId: string) {
-  const races = await db.races.findByUser(userId)
-  const badges = computeBadges(races)
-  await db.badges.upsertMany(userId, badges)
-}
