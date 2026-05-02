@@ -2,7 +2,7 @@
 
 > *marka* — a mark, a stamp, a finish line crossed.
 
-A race log for endurance athletes who take their sport seriously. Built brutalist, moves fast, earns badges.
+A race log for endurance athletes who take their sport seriously.
 
 ---
 
