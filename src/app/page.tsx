@@ -38,15 +38,27 @@ export default async function HomePage() {
     <main className="min-h-screen bg-[#f0ebe0]">
 
       {/* Hero */}
-      <div className="border-b-2 border-[#111] px-5 sm:px-14 pt-8 pb-6 sm:pb-8">
+      <div className="border-b-2 border-[#111] px-5 sm:px-14 pt-8 pb-6 sm:pb-8 relative">
         <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-2">
           {today}
         </p>
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 sm:gap-0">
-          <HeroGreeting name={name} />
+          <div className="flex items-start justify-between">
+            <HeroGreeting name={name} />
+            <Link
+              href="/races/new"
+              className="md:hidden flex-shrink-0 bg-[#e8001d] w-14 h-14 flex items-center justify-center hover:opacity-85 transition-opacity"
+              aria-label="Log Race"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </Link>
+          </div>
 
           {/* Stats */}
-          <div className="flex gap-6 sm:gap-12 pb-0 sm:pb-2 items-end">
+          <div className="flex gap-6 sm:gap-12 pb-0 sm:pb-2 items-start">
             <div>
               <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1.5">Races</p>
               <AnimatedCounter value={races.length} className="font-[family-name:var(--font-barlow-condensed)] font-black text-[40px] sm:text-[56px] leading-none text-[#111]" />
