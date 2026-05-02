@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { requireUser } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { computeBadges } from '@/lib/badges'
 import { getRaces } from '@/lib/races'
 import { getProfile } from '@/lib/profile'
 import Link from 'next/link'
@@ -15,18 +16,16 @@ const SPORT_LABELS: Record<string, string> = {
 }
 
 export default async function HomePage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const user = await requireUser()
 
-  const [races, profile] = await Promise.all([getRaces(), getProfile()])
+  const [races, profile, badges] = await Promise.all([
+    getRaces(),
+    getProfile(),
+    db.badges.findByUser(user.id),
+  ])
 
   const countries = new Set(races.map(r => r.location_country)).size
   const recentRaces = races.slice(0, 6)
-
-  const { data: badgeRows } = await supabase.from('badges').select('key').eq('user_id', user.id)
-  const badgeCount = badgeRows?.length ?? 0
-
   const name = (profile?.display_name ?? user.email?.split('@')[0] ?? 'Athlete').toUpperCase()
   const today = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
 
@@ -58,7 +57,7 @@ export default async function HomePage() {
           <div className="w-px bg-[#c8c0b0] self-stretch my-2" />
           <div className="bg-[#e8001d] px-5 pt-3 pb-0 mb-[-32px]">
             <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-white/65 mb-1.5">Passport</p>
-            <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[56px] leading-none text-white">{badgeCount}</p>
+            <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[56px] leading-none text-white">{badges.length}</p>
             <p className="font-[family-name:var(--font-space-mono)] text-[8px] text-white/65 mt-1 mb-3">BADGES EARNED</p>
           </div>
         </div>
@@ -66,16 +65,11 @@ export default async function HomePage() {
 
       {/* Race list */}
       <div className="max-w-[860px] mx-auto w-full px-14 flex-1">
-
-        {/* Header row */}
         <div className="flex items-center justify-between border-b-[1.5px] border-[#111] pt-5">
           <h2 className="font-[family-name:var(--font-barlow-condensed)] font-black text-3xl uppercase text-[#111]">
             Recent Races
           </h2>
-          <Link
-            href="/races"
-            className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] hover:text-[#111] transition-colors pb-2"
-          >
+          <Link href="/races" className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] hover:text-[#111] transition-colors pb-2">
             View All →
           </Link>
         </div>
@@ -118,13 +112,9 @@ export default async function HomePage() {
                 </svg>
               </Link>
             ))}
-
             {races.length > 6 && (
               <div className="py-8 text-center">
-                <Link
-                  href="/races"
-                  className="border-2 border-[#111] px-10 py-3 font-[family-name:var(--font-space-mono)] text-[10px] uppercase tracking-widest font-bold text-[#111] hover:bg-[#111] hover:text-[#f0ebe0] transition-colors inline-block"
-                >
+                <Link href="/races" className="border-2 border-[#111] px-10 py-3 font-[family-name:var(--font-space-mono)] text-[10px] uppercase tracking-widest font-bold text-[#111] hover:bg-[#111] hover:text-[#f0ebe0] transition-colors inline-block">
                   View All {races.length} Races ↗
                 </Link>
               </div>

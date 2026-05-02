@@ -1,5 +1,4 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { requireUser } from '@/lib/auth'
 import { getProfile, updateProfile } from '@/lib/profile'
 import { signOut } from '@/app/login/actions'
 import Link from 'next/link'
@@ -9,11 +8,7 @@ export default async function ProfilePage({
 }: {
   searchParams: Promise<{ error?: string; saved?: string }>
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const profile = await getProfile()
+  const [user, profile] = await Promise.all([requireUser(), getProfile()])
   const { error, saved } = await searchParams
 
   const displayName = profile?.display_name ?? ''

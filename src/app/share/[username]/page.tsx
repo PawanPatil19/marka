@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import type { Race, Badge } from '@/lib/types'
 
@@ -18,23 +18,14 @@ function countryFlag(code: string) {
 
 export default async function SharePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
-  const supabase = await createClient()
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('username', username)
-    .single()
-
+  const profile = await db.profiles.findByUsername(username)
   if (!profile) notFound()
 
-  const [{ data: raceRows }, { data: badgeRows }] = await Promise.all([
-    supabase.from('races').select('*').eq('user_id', profile.id).order('date', { ascending: false }),
-    supabase.from('badges').select('*').eq('user_id', profile.id).order('earned_at', { ascending: true }),
+  const [races, badges] = await Promise.all([
+    db.races.findByUser(profile.id),
+    db.badges.findByUser(profile.id),
   ])
-
-  const races = (raceRows ?? []) as Race[]
-  const badges = (badgeRows ?? []) as Badge[]
   const countries = new Set(races.map(r => r.location_country)).size
 
   return (

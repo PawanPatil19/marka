@@ -1,21 +1,15 @@
-import { createClient } from '@/lib/supabase/server'
-import { notFound, redirect } from 'next/navigation'
+import { requireUser } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { deleteRace } from '@/lib/races'
 import type { Race } from '@/lib/types'
 
 export default async function RaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: race } = await supabase
-    .from('races').select('*').eq('id', id).eq('user_id', user.id).single()
-
-  if (!race) notFound()
-
-  const r = race as Race
+  const user = await requireUser()
+  const r = await db.races.findById(id, user.id)
+  if (!r) notFound()
   const dateStr = new Date(r.date).toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   }).toUpperCase()

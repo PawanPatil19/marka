@@ -1,5 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { requireUser } from '@/lib/auth'
+import { db } from '@/lib/db'
 import Link from 'next/link'
 import type { Badge } from '@/lib/types'
 
@@ -24,22 +24,18 @@ const MILESTONE_META: Record<string, { icon: string; desc: string }> = {
 const ALL_MILESTONES = ['first_finish', 'finisher_703', 'finisher_ironman', 'finisher_marathon', 'finisher_ultra', 'count_5', 'count_10', 'count_25', 'count_50']
 
 export default async function PassportPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const user = await requireUser()
 
-  const { data: rows } = await supabase
-    .from('badges').select('*').eq('user_id', user.id).order('earned_at', { ascending: true })
+  const [badges, races] = await Promise.all([
+    db.badges.findByUser(user.id),
+    db.races.findByUser(user.id),
+  ])
 
-  const badges = (rows ?? []) as Badge[]
   const earnedKeys = new Set(badges.map(b => b.key))
-
   const geography = badges.filter(b => b.category === 'geography')
   const nonGeo = badges.filter(b => b.category !== 'geography')
   const lockedMilestones = ALL_MILESTONES.filter(k => !earnedKeys.has(k))
-
-  const { data: raceRows } = await supabase.from('races').select('*').eq('user_id', user.id)
-  const raceCount = raceRows?.length ?? 0
+  const raceCount = races.length
 
   return (
     <main className="min-h-screen bg-[#f0ebe0]">

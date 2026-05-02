@@ -18,6 +18,27 @@ export interface Race {
   notes?: string
 }
 
+export interface Profile {
+  id: string
+  username: string
+  display_name: string
+  created_at: string
+}
+
+export type RaceInsert = {
+  user_id: string
+  name: string
+  date: string
+  location_city: string
+  location_country: string
+  sport_type: string
+  distance_category: string
+  finish_time: string
+  overall_rank?: number | null
+  age_group_rank?: number | null
+  notes?: string | null
+}
+
 export type BadgeCategory = 'geography' | 'milestone' | 'count'
 
 export interface Badge {
