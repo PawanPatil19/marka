@@ -46,6 +46,7 @@ create table public.races (
   overall_rank       integer,
   age_group_rank     integer,
   notes              text,
+  strava_activity_id bigint unique,
   created_at         timestamptz default now()
 );
 

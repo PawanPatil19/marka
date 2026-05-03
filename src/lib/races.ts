@@ -78,3 +78,31 @@ export async function importRaces(races: RaceInsert[]): Promise<void> {
   revalidatePath('/')
 }
 
+export async function importStravaActivity(activity: {
+  stravaId: number
+  name: string
+  date: string
+  sport_type: string
+  distance_category: string
+  finish_time: string
+  location_city: string
+  location_country: string
+}): Promise<{ success: boolean }> {
+  const user = await requireUser()
+  await db.races.insert({
+    user_id: user.id,
+    name: activity.name,
+    date: activity.date,
+    location_city: activity.location_city,
+    location_country: activity.location_country,
+    sport_type: activity.sport_type,
+    distance_category: activity.distance_category,
+    finish_time: activity.finish_time,
+    strava_activity_id: activity.stravaId,
+  })
+  await syncBadges(user.id)
+  revalidatePath('/races')
+  revalidatePath('/')
+  return { success: true }
+}
+

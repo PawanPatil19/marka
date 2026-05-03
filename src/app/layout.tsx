@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Barlow, Barlow_Condensed, Space_Mono } from "next/font/google";
 import "./globals.css";
 import TopBarWrapper from "@/components/TopBarWrapper";
+import { StravaWatcherWrapper } from "@/components/StravaWatcherWrapper";
 
 const barlow = Barlow({
   variable: "--font-barlow",
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         <TopBarWrapper />
         {children}
+        <StravaWatcherWrapper />
       </body>
     </html>
   );

@@ -37,6 +37,7 @@ export type RaceInsert = {
   overall_rank?: number | null
   age_group_rank?: number | null
   notes?: string | null
+  strava_activity_id?: number | null
 }
 
 export interface StravaConnection {
