@@ -25,6 +25,11 @@ const spaceMono = Space_Mono({
 export const metadata: Metadata = {
   title: "Marka",
   description: "Your endurance race passport",
+  themeColor: "#e8001d",
+  icons: {
+    icon: "/marka-app-icon.svg",
+    apple: "/marka-app-icon.svg",
+  },
 };
 
 export default function RootLayout({

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="logo-svg" id="logo-icon" data-om-id="1193db9d:108">
+          <!-- Inner frame -->
+          <rect x="20" y="20" width="360" height="360" fill="none" stroke="#161412" stroke-width="2" data-om-id="1193db9d:109"/>
+
+          <!-- The big M, centered -->
+          <text x="200" y="290" text-anchor="middle" font-family="Fraunces, serif" font-weight="900" font-size="320" fill="#161412" letter-spacing="-16" data-om-id="1193db9d:110">M</text>
+
+          <!-- Red dot -->
+          <rect x="312" y="270" width="24" height="24" fill="#d83a2c" stroke="#161412" stroke-width="2" data-om-id="1193db9d:111"/>
+        </svg>
