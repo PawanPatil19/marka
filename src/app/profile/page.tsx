@@ -120,12 +120,11 @@ export default async function ProfilePage({
             {stravaConnected ? 'Import your race activities from Strava.' : 'Connect once to import race activities.'}
           </p>
           {stravaConnected ? (
-            <Link
-              href="/strava/import"
-              className="inline-flex items-center gap-2 bg-[#111] text-[#f0ebe0] px-5 py-2.5 font-[family-name:var(--font-space-mono)] text-[10px] uppercase tracking-widest font-bold hover:bg-[#333] transition-colors"
-            >
-              Import Races →
-            </Link>
+            // Import Races button disabled — auto-watcher handles imports now
+            // <Link href="/strava/import" className="...">Import Races →</Link>
+            <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-green-700">
+              Auto-import active. New races appear as popups.
+            </p>
           ) : (
             <a
               href="/api/strava/connect"

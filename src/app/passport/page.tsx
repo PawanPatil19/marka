@@ -75,7 +75,7 @@ export default async function PassportPage() {
         </div>
         <div className="flex items-center gap-5 sm:gap-8 pb-4">
           <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#888] uppercase tracking-widest hidden sm:block">
-            {raceCount} races · {geography.length} countries · {badges.length} badges
+            {raceCount} races · {geography.filter(b => b.key.replace('country_', '').length === 2).length} countries · {badges.length} badges
           </p>
           <div className="flex items-center gap-2">
             <div className="w-32 sm:w-40 h-1 bg-[#ddd]">
@@ -129,27 +129,29 @@ export default async function PassportPage() {
           {/* Personal Bests */}
           {pbs.length > 0 && (
             <div>
-              <div className="border-b-2 border-[#111] pb-2 mb-0">
+              <div className="border-b-2 border-[#111] pb-2 mb-4">
                 <p className="font-[family-name:var(--font-space-mono)] text-[10px] font-bold uppercase tracking-widest text-[#111]">
                   § Personal Bests
                 </p>
               </div>
-              <div className="border-[1.5px] border-[#111] border-t-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-                {pbs.map(({ label, race }, i) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {pbs.map(({ label, race }) => (
                   <Link
                     key={`${race.sport_type}__${race.distance_category}`}
                     href={`/races/${race.id}`}
-                    className="flex items-center justify-between px-5 py-4 hover:bg-[#e4ddd0] transition-colors group border-b border-[#c8c0b0]"
+                    className="group border-[1.5px] border-[#111] p-4 hover:bg-[#111] transition-colors flex flex-col gap-2"
                   >
-                    <div>
-                      <p className="font-[family-name:var(--font-space-mono)] text-[9px] uppercase tracking-widest text-[#888] mb-1">{label}</p>
-                      <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[32px] leading-none text-[#111] group-hover:text-[#e8001d] transition-colors">
-                        {race.finish_time}
+                    <p className="font-[family-name:var(--font-space-mono)] text-[8px] uppercase tracking-widest text-[#888] group-hover:text-[#666]">
+                      {label}
+                    </p>
+                    <p className="font-[family-name:var(--font-barlow-condensed)] font-black text-[36px] sm:text-[42px] leading-none text-[#e8001d]">
+                      {race.finish_time}
+                    </p>
+                    <div className="border-t border-[#ddd] group-hover:border-[#333] pt-2 mt-auto">
+                      <p className="font-black text-[10px] uppercase text-[#111] group-hover:text-[#f0ebe0] truncate">
+                        {race.name}
                       </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-black text-[11px] uppercase text-[#111] truncate max-w-[140px]">{race.name}</p>
-                      <p className="font-[family-name:var(--font-space-mono)] text-[9px] text-[#888] mt-0.5">
+                      <p className="font-[family-name:var(--font-space-mono)] text-[8px] text-[#888] group-hover:text-[#666] mt-0.5">
                         {race.location_city} · {new Date(race.date).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase()}
                       </p>
                     </div>
